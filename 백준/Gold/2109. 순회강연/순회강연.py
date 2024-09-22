@@ -12,7 +12,7 @@ if n > 0:
 		p, d = map(int, input().split())
 		data.append((p, d))
 
-	sorted_data = sorted(data, key=lambda x:(x[1], x[0]))
+	sorted_data = sorted(data, key=lambda x:x[1])
 
 	for p, d in sorted_data:
 		heapq.heappush(pq, p)
