@@ -1,21 +1,18 @@
-import sys
 import heapq
-input = sys.stdin.readline
-
-heap = []
-data = []
 
 n = int(input())
-
+data = []
+pq = []
 for _ in range(n):
     start, end = map(int, input().split())
     data.append((start, end))
 
-sorted_data = sorted(data, key=lambda x: x[0])
+data.sort(key=lambda x: x[0])
 
-for start, end in sorted_data:
-    if heap and heap[0] <= start:
-        heapq.heappop(heap)
-    heapq.heappush(heap, end)
+for i in data:
+    if len(pq) > 0:
+        if i[0] >= pq[0]:
+            heapq.heappop(pq)
+    heapq.heappush(pq, i[1])
 
-print(len(heap))
+print(len(pq))
