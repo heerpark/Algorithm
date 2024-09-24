@@ -1,4 +1,6 @@
 import heapq
+import sys
+input = sys.stdin.readline
 
 n = int(input())
 data = []
@@ -16,3 +18,5 @@ for i in data:
     heapq.heappush(pq, i[1])
 
 print(len(pq))
+
+
