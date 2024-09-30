@@ -1,15 +1,18 @@
 import sys
+
 input = sys.stdin.readline
-
+INF = 1000000000
 n = int(input())
+
 data = list(map(int, input().split()))
-dp = [float('inf')] * n
 
-dp[0] = 0  # 첫 번째 돌은 힘이 0
+dp = [INF] * n
+dp[0] = 0
 
-for i in range(1, n):
-    for j in range(i):
-        force = (i - j) * (1 + abs(data[i] - data[j]))
-        dp[i] = min(dp[i], max(dp[j], force))
+for j in range(n):
+    for i in range(j):
+        power = (j - i) * (1 + abs(data[i] - data[j]))
+        dp[j] = min(dp[j], max(dp[i], power))
+
 
 print(dp[n-1])
