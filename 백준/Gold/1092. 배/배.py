@@ -18,9 +18,12 @@ else:
             if box and i < box[-1]:
                 continue
             for j in box:
-                if i >= j:
+                if j <= i:
                     box.remove(j)
                     break
         time += 1
 
 print(time)
+
+
+
