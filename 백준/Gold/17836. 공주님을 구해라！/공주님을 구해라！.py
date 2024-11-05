@@ -2,55 +2,60 @@ from collections import deque
 import sys
 
 input = sys.stdin.readline
-queue = deque() #queue.append, queue.popleft()
+queue = deque()
 
-n, m ,t = map(int, input().split())
-
-data = []
-drow = [1, 0, -1, 0]
-dcol = [0, 1, 0, -1]
+n, m, t = map(int, input().split())
+grid = []
 
 for _ in range(n):
-    row = list(map(int, input().split()))
-    data.append(row)
+    data = list(map(int, input().split()))
+    grid.append(data)
 
 for i in range(n):
     for j in range(m):
-        if data[i][j] == 1:
-            data[i][j] = -1
-        elif data[i][j] == 2:
-            data[i][j] = -2
+        if grid[i][j] == 1:
+            grid[i][j] = -1
+        elif grid[i][j] == 2:
+            grid[i][j] = -2
 
-# print(data)
-knife = 100000
+knife = 1000000
+grid[0][0] = 1
 queue.append((0, 0))
+drow = [1, 0, -1, 0]
+dcol = [0, 1, 0, -1]
 
 while queue:
     row, col = queue.popleft()
-    time = data[row][col] + 1
     for i in range(4):
-        new_row = row + drow[i]
-        new_col = col + dcol[i]
-        if 0 <= new_row < n and 0 <= new_col < m:
-            if data[new_row][new_col] >= 0:
-                if data[new_row][new_col] == 0 or time < data[new_row][new_col]:
-                    data[new_row][new_col] = time
-                    queue.append((new_row, new_col))
-            elif data[new_row][new_col] == -2:
-                data[new_row][new_col] = time
-                queue.append((new_row, new_col))
-                knife = time
-                knife += (n - new_row - 1) + (m - new_col - 1)
+        nrow = row + drow[i]
+        ncol = col + dcol[i]
+        cost = grid[row][col] + 1
+        if 0 <= nrow < n and 0 <= ncol < m:
+            if grid[nrow][ncol] == 0:
+                grid[nrow][ncol] = cost
+                queue.append((nrow, ncol))
+            elif grid[nrow][ncol] == -2:
+                grid[nrow][ncol] = cost
+                knife = grid[nrow][ncol] + n - nrow - 1 + m - ncol - 1
+                queue.append((nrow, ncol))
 
-if data[n-1][m-1] == 0:
-    if knife == 100000 or knife > t:
+
+if grid[n-1][m-1] == 0:
+    if knife == 1000000:
         print("Fail")
+    elif knife - 1 <= t:
+        print(knife - 1)
     else:
-        print(knife)
+        print("Fail")
+    
 else:
-    res = min(knife, data[n-1][m-1])
-    if res > t:
-        print("Fail")
-    else:
+    res = min(grid[n-1][m-1] - 1, knife - 1)
+    if res <= t:
         print(res)
+    else:
+        print("Fail")
+
+
+
+
 
