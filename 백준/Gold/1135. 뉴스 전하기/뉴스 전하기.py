@@ -14,8 +14,8 @@ def get_min_cost(rel, cost, idx):
         temp.append(cost[i])
     temp.sort(reverse=True)
     for i in range(len(temp)):
-        temp[i] += i
-    return max(temp) + 1
+        temp[i] += i + 1
+    return max(temp)
 
 def search(rel, cost, idx):
     if not rel[idx]:
