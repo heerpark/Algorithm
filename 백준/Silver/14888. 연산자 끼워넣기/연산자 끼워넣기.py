@@ -1,34 +1,37 @@
-import sys
 n = int(input())
-data = list(map(int, input().split()))
-add, minus, mul, div = map(int, input().split())
+number = list(map(int, input().split()))
+operator = list(map(int, input().split()))
+num_count = len(number)
+min_res = int(1e9 + 1)
+max_res = -int(1e9 + 1)
 
-max_value = -1000000001
-min_value = +1000000001
-
-def dfs(i, now):
-    global max_value, min_value, add, minus, mul, div
-    if i == n:
-        max_value = max(max_value, now)
-        min_value = min(min_value, now)
+def dfs(operator, depth, arr):
+    global min_res, max_res
+    if depth == num_count - 1:
+        temp = number[0]
+        for i in range(1, num_count):
+            if arr[i-1] == 0:
+                temp += number[i]
+            elif arr[i-1] == 1:
+                temp -= number[i]
+            elif arr[i-1] == 2:
+                temp  *= number[i]
+            else:
+                if temp < 0:
+                    temp = -(abs(temp) // number[i])
+                else:
+                    temp = temp // number[i]
+        min_res = min(min_res, temp)
+        max_res = max(max_res, temp)
     else:
-        if add > 0:
-            add -= 1
-            dfs(i + 1, now + data[i])
-            add += 1
-        if minus > 0:
-            minus -= 1
-            dfs(i + 1, now - data[i])
-            minus += 1
-        if mul > 0:
-            mul -= 1
-            dfs(i + 1, now * data[i])
-            mul += 1
-        if div > 0:
-            div -= 1
-            dfs(i + 1, int(now / data[i]))
-            div += 1
+        for i in range(4):
+            if operator[i] > 0:
+                operator[i] -= 1
+                arr.append(i)
+                dfs(operator, depth+1, arr)
+                operator[i] += 1
+                arr.pop()
 
-dfs(1, data[0])
-print(max_value)
-print(min_value)
+dfs(operator, 0, [])
+print(max_res)
+print(min_res)
