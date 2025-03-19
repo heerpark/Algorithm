@@ -1,49 +1,55 @@
 import sys
 from collections import deque
 
-
 input = sys.stdin.readline
 
 n, m = map(int, input().split())
-graph = [list(map(int, input().split())) for _ in range(n)]
+dr = [1, -1, 0, 0]
+dc = [0, 0, 1, -1]
+data = []
+for _ in range(n):
+    data.append(list(map(int, input().split())))
+
 result = 0
 
-def bfs():
-    global result
-    q = deque()
-    dr = [0, 0, 1, -1]
-    dc = [1, -1, 0, 0]
-    safe_zone = 0
-    tmp_graph = [row[:] for row in graph]
+def get_safe_zone(data):
+    count = 0
     for i in range(n):
         for j in range(m):
-            if tmp_graph[i][j] == 2:
+            if data[i][j] == 0:
+                count += 1
+    return count
+
+def bfs(data):
+    global result
+    temp = [row[:] for row in data]
+    q = deque()
+    for i in range(n):
+        for j in range(m):
+            if temp[i][j] == 2:
                 q.append((i, j))
     while q:
-        r, c = q.popleft()
+        now = q.popleft()
         for i in range(4):
-            new_r = r + dr[i]
-            new_c = c + dc[i]
-            if 0 <= new_r < n and 0 <= new_c < m and tmp_graph[new_r][new_c] == 0:
-                tmp_graph[new_r][new_c] = 2
-                q.append((new_r, new_c))
-    for i in range(n):
-        for j in range(m):
-            if tmp_graph[i][j] == 0:
-                safe_zone += 1
+            nr = now[0] + dr[i]
+            nc = now[1] + dc[i]
+            if 0 <= nr < n and 0 <= nc < m:
+                if temp[nr][nc] == 0:
+                    temp[nr][nc] = 2
+                    q.append((nr, nc))
+    safe_zone = get_safe_zone(temp)
     result = max(result, safe_zone)
 
-def make_wall(count):
-    if count == 3:
-        bfs()
+def dfs(depth):
+    if depth == 3:
+        bfs(data)
         return
     for i in range(n):
         for j in range(m):
-            if graph[i][j] == 0:
-                graph[i][j] = 1
-                make_wall(count + 1)
-                graph[i][j] = 0
+            if data[i][j] == 0:
+                data[i][j] = 1
+                dfs(depth + 1)
+                data[i][j] = 0
 
-make_wall(0)
+dfs(0)
 print(result)
-
