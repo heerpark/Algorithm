@@ -18,40 +18,22 @@ cloud[n-2][0] = True
 cloud[n-2][1] = True
 
 
-def moved_cloud(cloud, d, s, i, j):
-    if d == 1:
-        j -= s
-    elif d == 2:
-        i -= s
-        j -= s
-    elif d == 3:
-        i -= s
-    elif d == 4:
-        i -= s
-        j += s
-    elif d == 5:
-        j += s
-    elif d == 6:
-        i += s
-        j += s
-    elif d == 7:
-        i += s
-    elif d == 8:
-        i += s
-        j -= s
-    i = i % n
-    j = j % n
-    # while not (0 <= i < n):
-    #     if i < 0:
-    #         i += 5
-    #     else:
-    #         i -= 5
-    # while not (0 <= j < n):
-    #     if j < 0:
-    #         j += 5
-    #     else:
-    #         j -= 5
-    return i, j
+def moved_coordinate(d, s, i, j):
+    dr = [0, -1, -1, -1, 0, 1, 1, 1]
+    dc = [-1, -1, 0, 1, 1, 1, 0, -1]
+    new_i = i + dr[d-1] * s
+    new_j = j + dc[d-1] * s
+    while not (0 <= new_i < n):
+        if new_i < 0:
+            new_i += n
+        else:
+            new_i -= n
+    while not (0 <= new_j < n):
+        if new_j < 0:
+            new_j += n
+        else:
+            new_j -= n
+    return new_i, new_j
 
 
 def move_clouds(cloud, d, s):
@@ -61,7 +43,7 @@ def move_clouds(cloud, d, s):
         for j in range(n):
             if cloud[i][j]:
                 bef.append((i, j))
-                new_i, new_j = moved_cloud(cloud, d, s, i, j)
+                new_i, new_j = moved_coordinate(d, s, i, j)
                 new.append((new_i, new_j))
     for i, j in bef:
         cloud[i][j] = False
@@ -69,47 +51,39 @@ def move_clouds(cloud, d, s):
         cloud[i][j] = True
 
 
+
 def rain_and_copy_and_die(graph, cloud):
     temp = []
     dr = [-1, -1, 1, 1]
     dc = [-1, 1, -1, 1]
-
-    # 비 내리기
+    # 비내린다
     for i in range(n):
         for j in range(n):
             if cloud[i][j]:
                 graph[i][j] += 1
                 temp.append((i, j))
-
-    # 물 복사 버그
+    # 물복사버그
     for i, j in temp:
-        cnt = 0
+        sum = 0
         for k in range(4):
-            ni = i + dr[k]
-            nj = j + dc[k]
-            if 0 <= ni < n and 0 <= nj < n:
-                if graph[ni][nj] > 0:
-                    cnt += 1
-        graph[i][j] += cnt
+            new_i = i + dr[k]
+            new_j = j + dc[k]
+            if 0 <= new_i < n and 0 <= new_j < n:
+                if graph[new_i][new_j] > 0:
+                    sum += 1
+        graph[i][j] += sum
 
-    # 이전 구름을 모두 없애고
-    prev_clouds = set(temp)
+    # 구름 있는 칸 제외하고 물의 양이 2이상인 칸에 구름 만들기. 구름이 생기면 물의 양이 2만큼 준다.
     for i in range(n):
         for j in range(n):
-            cloud[i][j] = False
+            if not cloud[i][j]:
+                if graph[i][j] >= 2:
+                    cloud[i][j] = True
+                    graph[i][j] -= 2
+    # 뒤지기
+    for i, j in temp:
+        cloud[i][j] = False
 
-    # 새 구름 생성
-    for i in range(n):
-        for j in range(n):
-            if (i, j) not in prev_clouds and graph[i][j] >= 2:
-                cloud[i][j] = True
-                graph[i][j] -= 2
-
-
-
-# move_clouds(cloud, 1, 3)
-# for i in range(n):
-#     print(cloud[i])
 
 def debug(graph, cloud):
     print("graph")
@@ -132,8 +106,5 @@ result = 0
 for i in range(n):
     for j in range(n):
         result += graph[i][j]
-
-# for i in range(n):
-#     print(graph[i])
 
 print(result)
