@@ -11,8 +11,9 @@ for i in range(1, n + 1):
 
 def find_parent(parent, a):
     if parent[a] != a:
-        return find_parent(parent, parent[a])
-    return parent[a]
+         return find_parent(parent, parent[a])
+    return a
+
 
 
 def union_parent(parent, a, b):
